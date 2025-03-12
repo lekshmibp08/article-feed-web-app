@@ -1,9 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
+const FRONT_END_URL = process.env.FRONT_END_URL;
 
 mongoose
   .connect(process.env.MONGODB_URL, { serverSelectionTimeoutMS: 20000 })
@@ -15,6 +18,16 @@ mongoose
   });
 
 const app = express();
+
+app.use(
+  cors({
+    origin: FRONT_END_URL,
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.listen(PORT, () => {
   console.log(`Server Running on http://localhost:${PORT}`);
