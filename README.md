@@ -21,3 +21,15 @@ This is a **MERN stack** web application that allows users to read, create, and 
 - User dashboard to manage preferences
 - Secure API with JWT authentication
 - Image upload support for articles
+
+## Backend Modules
+
+-express - Web framework
+-mongoose - MongoDB ODM
+-dotenv - Environment variable management
+-cors - Enable CORS for API requests
+-bcryptjs - Password hashing
+-jsonwebtoken - User authentication
+-multer - File/image uploads
+-body-parser - Handle request data
+-nodemon - Auto-restarts the server on changes
