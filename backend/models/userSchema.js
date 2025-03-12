@@ -1,6 +1,6 @@
-const mongoose = require("mongoose")
+import mongoose from "mongoose";
 
-const userSchema = mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -24,12 +24,10 @@ const userSchema = mongoose.Schema(
       required: true,
     },
     
-    preferences: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-      },
-    ],
+    preferences: [{ type: String, 
+      enum: ["Sports", "Politics", "Technology", "Space", "Health", "Entertainment", "Science", "Business"] 
+    }]
+
   },
   {
     timestamps: true,
