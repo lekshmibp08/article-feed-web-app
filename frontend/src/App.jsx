@@ -1,7 +1,14 @@
-import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/HomePage";
+import SignupForm from "./pages/SignupForm";
 
 function App() {
-  return <>My REACT ARTICLE FEED</>;
+  return <>
+  <Routes>
+    <Route path='/' element={<Home />} />
+    <Route path='/signup' element={<SignupForm />} />
+  </Routes>
+  </>;
 }
 
 export default App;
