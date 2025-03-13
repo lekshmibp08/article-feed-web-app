@@ -1,101 +1,310 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Modal from "react-modal";
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
+
+Modal.setAppElement("#root"); // Required for accessibility
+
+const step1ValidationSchema = Yup.object().shape({
+  firstName: Yup.string()
+    .matches(/[A-Za-z]/, 'First Name must contain at least one alphabet')
+    .required('First Name is required'),
+
+  lastName: Yup.string()
+    .matches(/[A-Za-z]/, 'Last Name must contain at least one alphabet')
+    .required('Last Name is required'),
+
+  email: Yup.string()
+    .email('Invalid email')
+    .required('Email is required'),
+
+  phone: Yup.string()
+    .matches(/^\d{10}$/, 'Mobile Number must be 10 digits')
+    .required('Mobile Number is required'),
+
+  password: Yup.string()
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+      'Password must be at least 6 characters long and include a letter, a number, and a special character'
+    )
+    .required('Password is required'),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords do not match.')
+    .required('Confirm Password is required'),
+
+  preferences: Yup.array()
+    .min(1, 'At least one preference must be selected')
+    .required('At least one preference must be selected'),
+});
 
 const SignupForm = () => {
+
+  const [step, setStep] = useState(1);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [timer, setTimer] = useState(60);
+
+  const preferenceOptions = ["Sports", "Politics", "Technology", "Space", "Health", "Entertainment", "Science", "Business"];
+
+  useEffect(() => {
+    let interval;
+    if (step === 2) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => {
+          if (prevTimer > 0) return prevTimer - 1;
+          clearInterval(interval);
+          return 0;
+        });
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [step]);
+
+  // Format the timer as MM:SS
+  const formatTimer = (time) => {
+    const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+    const seconds = (time % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  };
+
+  // Step 1: Register and Request OTP
+  const handleRegister = async (values) => {
+    setError('');
+    console.log("🔗 API Request URL:", `/api/users/send-otp`);
+    console.log(values);
+    console.log('====================================');
+    try {
+      const response = await axios.post('/api/users/send-otp', { email: values.email });
+      setMessage(response.data.message);
+      setStep(2); // Move to Step 2
+      setTimer(60); // Reset timer for 2 minutes
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to register. Please try again.');
+    }
+  };
+
+  // Step 2: Verify OTP
+  const handleVerifyOtp = async (values) => {
+    setError('');
+    setMessage('');
+    try {
+      const response = await axios.post('/api/users/verify-otp-and-register', values);
+      setMessage(response.data.message);
+      navigate('/user/login'); 
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to verify OTP. Please try again.');
+    }
+  };
+
+
+  // Handle input change
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        preferences: checked ? [...prev.preferences, value] : prev.preferences.filter((p) => p !== value),
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-2xl font-bold text-gray-900 text-center">
-          Create an account
+        {step === 1 ? 'Create an account' : 'Verify OTP'}
         </h2>
-        <p className="text-gray-500 text-center mb-6">
-          Enter your information to create an account
-        </p>
 
-        <form className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-gray-700 text-sm mb-1">First name</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-                placeholder="John"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm mb-1">Last name</label>
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-                placeholder="Doe"
-              />
-            </div>
-          </div>
+        {message && <div className="text-green-600 text-center mb-4">{message}</div>}
+        {error && <div className="text-red-600 text-center mb-4">{error}</div>}
 
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">Email</label>
-            <input
-              type="email"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-              placeholder="m@example.com"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">Phone</label>
-            <input
-              type="tel"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-              placeholder="+1 (555) 000-0000"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">Date of Birth</label>
-            <input
-              type="date"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">Password</label>
-            <input
-              type="password"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">Confirm Password</label>
-            <input
-              type="password"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 text-sm mb-2">Article Preferences</label>
-            <div className="grid grid-cols-2 gap-2">
-              {["Sports", "Politics", "Technology", "Space", "Health", "Entertainment", "Science", "Business"].map((item) => (
-                <label key={item} className="flex items-center text-gray-700">
-                  <input type="checkbox" className="mr-2" />
-                  {item}
+        {step === 1 ? (
+          <Formik
+          initialValues={{
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            password: '',
+            confirmPassword: '',
+            preferences: []
+          }}
+          validationSchema={step1ValidationSchema}
+          onSubmit={(values) => handleRegister(values)}
+          >
+            {() => (
+              <Form className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                <label className="block text-gray-700 text-sm mb-1">
+                  First name
                 </label>
-              ))}
-            </div>
-          </div>
+                <Field
+                    type="text"
+                    name="firstName"
+                    placeholder="John"
+                    className="w-full border rounded-md px-3 py-2"
+                  />
+                  <ErrorMessage name="firstName" component="div" className="text-red-600 text-sm" />
+                </div>
 
-          <button className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition">
-            Create account
-          </button>
+                <div className="grid grid-cols-2 gap-4">
+                <label className="block text-gray-700 text-sm mb-1">
+                  Last name
+                </label>
+                <Field
+                    type="text"
+                    name="lastName"
+                    placeholder="Doe"
+                    className="w-full border rounded-md px-3 py-2"
+                  />
+                  <ErrorMessage name="lastName" component="div" className="text-red-600 text-sm" />
+                </div>
 
-          <p className="text-center text-gray-600 text-sm">
-            Already have an account?{" "}
-            <a href="#" className="text-black font-medium hover:underline">
-              Sign in
-            </a>
+                <div className="grid grid-cols-2 gap-4">
+                <label className="block text-gray-700 text-sm mb-1">
+                  Email
+                </label>
+                <Field
+                    type="text"
+                    name="email"
+                    placeholder="m@example.com"
+                    className="w-full border rounded-md px-3 py-2"
+                  />
+                  <ErrorMessage name="email" component="div" className="text-red-600 text-sm" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                <label className="block text-gray-700 text-sm mb-1">
+                  Mobile Number
+                </label>
+                <Field
+                    type="text"
+                    name="phone"
+                    placeholder="1234567890"
+                    className="w-full border rounded-md px-3 py-2"
+                  />
+                  <ErrorMessage name="phone" component="div" className="text-red-600 text-sm" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                <label className="block text-gray-700 text-sm mb-1">
+                  Password
+                </label>
+                <Field
+                    type="password"
+                    name="password"
+                    className="w-full border rounded-md px-3 py-2"
+                  />
+                  <ErrorMessage name="password" component="div" className="text-red-600 text-sm" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                <label className="block text-gray-700 text-sm mb-1">
+                  Confirm Password
+                </label>
+                <Field
+                    type="password"
+                    name="confirmPassword"
+                    className="w-full border rounded-md px-3 py-2"
+                  />
+                  <ErrorMessage name="confirmPassword" component="div" className="text-red-600 text-sm" />
+                </div>
+
+                {/* Preferences */}
+                <div>
+                  <label className="block text-gray-700 text-sm mb-1">Preferences</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {preferenceOptions.map((pref) => (
+                      <label key={pref} className="flex items-center">
+                        <Field 
+                          type="checkbox" 
+                          name="preferences" 
+                          value={pref} 
+                          className="mr-2" 
+                        />
+                        {pref}
+                      </label>
+                    ))}
+                  </div>
+                  <ErrorMessage name="preferences" component="div" className="text-red-600 text-sm" />
+                </div>       
+
+                <button 
+                  type="submit"
+                  className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition">
+                  Create account
+                </button>                
+
+              </Form>
+            )}
+
+          </Formik>
+        ) : (
+          <Formik
+            initialValues={{ otp: '' }}
+            onSubmit={(values) => handleVerifyOtp(values)}
+          >
+            {() => (
+              <Form className="space-y-4">
+                <div>
+                  <Field
+                    type="text"
+                    name="otp"
+                    placeholder="Enter OTP"
+                    className="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-customTeal"
+                  />
+                </div>
+                <button
+                  type="submit"                  
+                  className={`w-full py-2 rounded  bg-blue-600 text-white transition ${timer > 0 ? 
+                    ' hover:bg-blue-700' : 
+                    'opacity-50 cursor-not-allowed' }`} 
+                  
+                    disabled={timer === 0}
+                >
+                  Verify OTP
+                </button>
+              </Form>
+            )}
+          </Formik>
+
+        )}
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          {step === 1 ? (
+            <>
+              Already have an account?{" "}
+              <Link href="/login" className="text-primary underline">
+                Sign in
+              </Link>
+            </>
+          ) : (
+            <>
+              <div className="text-center text-gray-600 mb-2">Time Remaining: {formatTimer(timer)}</div>
+              <button
+                onClick={() => {
+                  if (timer === 0) {
+                    setStep(1);
+                    setError('');
+                    setMessage('');
+                  }
+                }}
+                className={`text-blue-600 focus:outline-none ${timer > 0 ? 'opacity-50 cursor-not-allowed' : 'hover:underline'}`}
+                disabled={timer > 0} 
+              >
+                Back to Register
+              </button>
+            </>
+          )}
           </p>
-        </form>
       </div>
     </div>
   );
