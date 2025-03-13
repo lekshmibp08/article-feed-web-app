@@ -5,7 +5,10 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
+import authRoutes from "./routes/authRoutes.js";
+
 dotenv.config();
+
 const PORT = process.env.PORT || 3000;
 const FRONT_END_URL = process.env.FRONT_END_URL;
 
@@ -29,6 +32,8 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+app.use('/api', authRoutes);
+
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
