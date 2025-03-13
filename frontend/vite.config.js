@@ -7,13 +7,12 @@ const BASE_URL = process.env.VITE_API_BASE_URL
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173,
     proxy: {
       "/api": {
-        //target:"http://localhost:3000",
-        target:BASE_URL,
+        target: process.env.VITE_API_BASE_URL || "http://localhost:4000",
         changeOrigin: true,
         secure: false,
+        //rewrite: (path) => path.replace(/^\/api/, "/api"), // Ensure correct forwarding
       },
     },
   },
