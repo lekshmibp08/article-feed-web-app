@@ -33,3 +33,8 @@ This is a **MERN stack** web application that allows users to read, create, and 
 -multer - File/image uploads
 -body-parser - Handle request data
 -nodemon - Auto-restarts the server on changes
+
+-user sign up
+-node mailer for email verification
+-created store
+-user login

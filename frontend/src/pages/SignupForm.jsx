@@ -79,7 +79,7 @@ const SignupForm = () => {
     setError('');
     
     try {
-      const response = await axios.post('/api/send-otp', { email: values.email });
+      const response = await axios.post('/api/send-otp', { email: values.email, phone: values.phone });
       setMessage(response.data.message);
       setStep(2); // Move to Step 2
       setTimer(60); // Reset timer for 2 minutes
