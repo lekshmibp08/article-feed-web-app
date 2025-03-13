@@ -5,7 +5,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root"); // Required for accessibility
 
@@ -50,6 +50,7 @@ const SignupForm = () => {
   const [timer, setTimer] = useState(60);
 
   const preferenceOptions = ["Sports", "Politics", "Technology", "Space", "Health", "Entertainment", "Science", "Business"];
+  const navigate = useNavigate();
 
   useEffect(() => {
     let interval;
@@ -76,11 +77,9 @@ const SignupForm = () => {
   // Step 1: Register and Request OTP
   const handleRegister = async (values) => {
     setError('');
-    console.log("🔗 API Request URL:", `/api/users/send-otp`);
-    console.log(values);
-    console.log('====================================');
+    
     try {
-      const response = await axios.post('/api/users/send-otp', { email: values.email });
+      const response = await axios.post('/api/send-otp', { email: values.email });
       setMessage(response.data.message);
       setStep(2); // Move to Step 2
       setTimer(60); // Reset timer for 2 minutes
@@ -94,25 +93,11 @@ const SignupForm = () => {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post('/api/users/verify-otp-and-register', values);
+      const response = await axios.post('/api/verify-and-register', values);
       setMessage(response.data.message);
-      navigate('/user/login'); 
+      navigate('/login'); 
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to verify OTP. Please try again.');
-    }
-  };
-
-
-  // Handle input change
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      setFormData((prev) => ({
-        ...prev,
-        preferences: checked ? [...prev.preferences, value] : prev.preferences.filter((p) => p !== value),
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -278,14 +263,14 @@ const SignupForm = () => {
           </Formik>
 
         )}
-        <p className="mt-2 text-center text-sm text-muted-foreground">
+        <div className="mt-2 text-center text-sm text-muted-foreground">
           {step === 1 ? (
-            <>
+            <p>
               Already have an account?{" "}
-              <Link href="/login" className="text-primary underline">
+              <a href="/login" className="text-primary underline">
                 Sign in
-              </Link>
-            </>
+              </a>
+            </p>
           ) : (
             <>
               <div className="text-center text-gray-600 mb-2">Time Remaining: {formatTimer(timer)}</div>
@@ -304,7 +289,7 @@ const SignupForm = () => {
               </button>
             </>
           )}
-          </p>
+          </div>
       </div>
     </div>
   );
