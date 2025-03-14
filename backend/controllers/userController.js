@@ -26,4 +26,36 @@ export const createAndPublishArticle = async (req, res, next) => {
     }
 };
 
+export const getMyArticles = async (req, res, next) => {    
+    try {
+        const { userId } = req.params;    
+        if (!userId) {
+            return next({message: "User ID is required", statusCode: 400})
+        }
+        const articles = await Article.find({ author: userId})           
+        res.status(200).json(articles);        
+    } catch (error) {        
+        next(error)
+    }
+            
+};
+export const deleteArticle = async (req, res, next) => {
+    try {
+        const { articleId } = req.params;
+        console.log(articleId);
+        
+        if (!articleId) {
+            return next({message: "Article ID is required", statusCode: 400})
+        }
+        const deletedArticle = await Article.findByIdAndDelete(articleId);
+        if (!deletedArticle) {
+            return next({ message: "Article not found", statusCode: 404 });
+        }
+        res.status(200).json({ message: "Article deleted successfully" });
+    } catch (error) {
+        next(error)
+    }
+}
+
+
 
