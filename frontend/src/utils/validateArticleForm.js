@@ -20,12 +20,14 @@ const validateArticleForm = (formData, imageUrl) => {
     if (!imageUrl) {
       errors.imageUrl = "Please upload an image."
     }
+
+    const tagsAsString = Array.isArray(formData.tags) ? formData.tags.join(", ") : formData.tags;    
   
-    if (!formData.tags.trim()) {
+    if (!tagsAsString.trim()) {
       errors.tags = "At least one tag is required."
     }
   
-    return errors // ✅ Returns an object with errors
+    return errors 
   }
   
   export default validateArticleForm
