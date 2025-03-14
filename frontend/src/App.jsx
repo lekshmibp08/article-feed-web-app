@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage"
 import DashboardPage from "./pages/DashboardPage";
 import CreateArticlePage from "./pages/CreateArticlePage";
 import MyArticlesPage from "./pages/MyArticlesPage";
+import EditArticlePage from "./pages/EditArticlePage";
 
 function App() {
   return <>
@@ -19,6 +20,7 @@ function App() {
     <Route path='/dashboard' element={<DashboardPage />} />
     <Route path="/dashboard/create-article" element={<CreateArticlePage />} />
     <Route path="/dashboard/my-articles" element={<MyArticlesPage />} />
+    <Route path="/dashboard/edit-article/:id" element={<EditArticlePage />} />
 
 
   </Routes>
