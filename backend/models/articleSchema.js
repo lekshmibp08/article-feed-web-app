@@ -62,10 +62,11 @@ const articleSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },  
+    toObject: { virtuals: true },
   },
 )
 
-// Virtuals for like, dislike, and block counts
 articleSchema.virtual("likesCount").get(function () {
   return this.likes.length;
 });
