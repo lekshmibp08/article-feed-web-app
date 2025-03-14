@@ -65,6 +65,20 @@ const articleSchema = new mongoose.Schema(
   },
 )
 
+// Virtuals for like, dislike, and block counts
+articleSchema.virtual("likesCount").get(function () {
+  return this.likes.length;
+});
+
+articleSchema.virtual("dislikesCount").get(function () {
+  return this.dislikes.length;
+});
+
+articleSchema.virtual("blocksCount").get(function () {
+  return this.blocks.length;
+});
+
+
 const Article = mongoose.model("Article", articleSchema)
 
 export default Article;
