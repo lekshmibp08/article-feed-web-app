@@ -4,6 +4,7 @@ import SignupForm from "./pages/SignupForm";
 import LoginPage from "./pages/LoginPage"
 import DashboardPage from "./pages/DashboardPage";
 import CreateArticlePage from "./pages/CreateArticlePage";
+import MyArticlesPage from "./pages/MyArticlesPage";
 
 function App() {
   return <>
@@ -13,6 +14,8 @@ function App() {
     <Route path='/login' element={<LoginPage />} />
     <Route path='/dashboard' element={<DashboardPage />} />
     <Route path="/dashboard/create-article" element={<CreateArticlePage />} />
+    <Route path="/dashboard/my-articles" element={<MyArticlesPage />} />
+
 
   </Routes>
   </>;
