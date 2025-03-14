@@ -10,6 +10,9 @@ const articleSchema = new mongoose.Schema(
       type: String,
       required: true, 
     },
+    content: {
+      type: String,
+    },
     category: { 
       type: String, 
       required: true, 
@@ -51,18 +54,21 @@ const articleSchema = new mongoose.Schema(
       type: Date, 
       default: Date.now 
     },
-    //status: {
-      //type: String,
-      //enum: ["Draft", "Published"],
-      //default: "Draft",
-    //},
+    status: {
+      type: String,
+      enum: ["Draft", "Published"],
+      default: "Draft",
+    },
   },
   {
     timestamps: true,
   },
 )
 
-export default mongoose.model("Article", articleSchema);
+const Article = mongoose.model("Article", articleSchema)
+
+export default Article;
+
 
 
 
