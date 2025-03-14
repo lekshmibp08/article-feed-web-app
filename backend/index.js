@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
 import authRoutes from "./routes/authRoutes.js";
@@ -33,6 +34,8 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(morgan("dev"));
+
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 
