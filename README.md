@@ -38,3 +38,5 @@ This is a **MERN stack** web application that allows users to read, create, and 
 -node mailer for email verification
 -created store
 -user login
+-create an article
+    -sign up at Cloudinary and get your Cloud Name
