@@ -1,51 +1,17 @@
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "../components/ui/Button"
 import { Card } from "../components/ui/Card"
 import { Dialog } from "../components/ui/Dialog"
 import DashboardLayout from "../components/DashboardLayout"
+import { useSelector } from "react-redux"
+import axios from "axios"
 
 function DashboardPage() {
-  const [articles, setArticles] = useState([
-    {
-      id: 1,
-      title: "The Future of Space Exploration",
-      excerpt:
-        "NASA's Artemis program aims to return humans to the Moon by 2024, with the ultimate goal of establishing a sustainable lunar presence...",
-      category: "Space",
-      author: "Jane Smith",
-      date: "May 15, 2025",
-      likes: 124,
-      dislikes: 8,
-      image: "https://placehold.co/400x200",
-    },
-    {
-      id: 2,
-      title: "Advancements in Quantum Computing",
-      excerpt:
-        "Researchers have achieved a breakthrough in quantum computing, demonstrating quantum supremacy with a 128-qubit processor...",
-      category: "Technology",
-      author: "John Doe",
-      date: "May 12, 2025",
-      likes: 89,
-      dislikes: 3,
-      image: "https://placehold.co/400x200",
-    },
-    {
-      id: 3,
-      title: "The Impact of Climate Change on Global Agriculture",
-      excerpt:
-        "Rising temperatures and changing precipitation patterns are affecting crop yields worldwide, with implications for food security...",
-      category: "Science",
-      author: "Alex Johnson",
-      date: "May 10, 2025",
-      likes: 156,
-      dislikes: 12,
-      image: "https://placehold.co/400x200",
-    },
-  ])
-
+  const user = useSelector((state) => state.auth.user);
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedArticle, setSelectedArticle] = useState(null)
   const [showDialog, setShowDialog] = useState(false)
 
@@ -53,6 +19,27 @@ function DashboardPage() {
     setSelectedArticle(article)
     setShowDialog(true)
   }
+  const preferences = user.preferences;
+  
+  
+  const fetchPrefferedArticle = async () => {
+    console.log(preferences);
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/articles", {
+        params: { preferences: preferences.join(",") }
+      });
+      setArticles(response.data)
+    } catch (error) {
+      
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchPrefferedArticle();
+  }, [user])
 
   return (
     <DashboardLayout>
@@ -65,58 +52,75 @@ function DashboardPage() {
         </Link>
       </div>
 
+      {/* Articles List */}
       <div className="grid gap-6 mt-6">
-        {articles.map((article) => (
-          <Card key={article.id}>
-            <div className="p-6">
-              <div className="grid md:grid-cols-[1fr_300px] gap-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
-                      {article.category}
-                    </span>
-                    <span className="text-sm text-gray-500">{article.date}</span>
-                  </div>
-
-                  <h2
-                    className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors"
-                    onClick={() => openArticleDialog(article)}
-                  >
-                    {article.title}
-                  </h2>
-
-                  <p className="text-gray-500">{article.excerpt}</p>
-
-                  <div className="flex items-center justify-between">
+        {loading ? (
+          <p>Loading articles...</p>
+        ) : articles.length === 0 ? (
+          <p>No articles found.</p>
+        ) : (
+          articles.map((article) => (
+            <Card key={article.id}>
+              <div className="p-6">
+                <div className="grid md:grid-cols-[1fr_300px] gap-6">
+                  <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        {article.author[0]}
-                      </div>
-                      <span className="text-sm font-medium">{article.author}</span>
+                      <span className="text-sm font-medium px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                        {article.category}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                      {new Date(article.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                      </span>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm text-gray-500">❤️ {article.likes}</span>
+                    <h2
+                      className="text-2xl font-bold cursor-pointer hover:text-blue-600 transition-colors"
+                      onClick={() => openArticleDialog(article)}
+                    >
+                      {article.title}
+                    </h2>
+
+                    <p className="text-gray-500">{article.description}</p>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                      <img 
+                        src="/public/images/avatar.png" 
+                        alt={`${article.author.firstName}`} 
+                        className="w-8 h-8 rounded-full object-cover" 
+                      />
+                        <span className="text-sm font-medium">
+                          {article.author.firstName} {article.author.lastName}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm text-gray-500">👎 {article.dislikes}</span>
-                      </div>
-                      <div className="relative">
-                        <button className="p-1 rounded-md hover:bg-gray-100">⋮</button>
+
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm text-gray-500">❤️ {article.likesCount}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm text-gray-500">👎 {article.dislikesCount}</span>
+                        </div>
+                        <div className="relative">
+                          <button className="p-1 rounded-md hover:bg-gray-100">⋮</button>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  <img
+                    src={article.imageUrl || "/public/images/place-holder.svg"}
+                    alt={article.title}
+                    className="w-full h-[200px] object-cover rounded-md"
+                  />
                 </div>
-                <img
-                  src={article.image || "/placeholder.svg"}
-                  alt={article.title}
-                  className="w-full h-[200px] object-cover rounded-md"
-                />
               </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          ))
+        )}
       </div>
 
       {/* Article Dialog */}
