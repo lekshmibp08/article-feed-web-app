@@ -83,7 +83,13 @@ function MyArticlesPage() {
                     <span className="text-sm font-medium px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-800">
                       {article.status}
                     </span>
-                    <span className="text-sm text-gray-500">{new Date(article.createdAt).toLocaleDateString()}</span>
+                    <span className="text-sm text-gray-500">
+                    {new Date(article.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                    </span>
                   </div>
                   <h2 className="text-xl font-bold">{article.title}</h2>
                   <p className="text-gray-500">{article.description}</p>
