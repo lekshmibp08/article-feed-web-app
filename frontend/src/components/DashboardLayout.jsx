@@ -2,12 +2,14 @@
 import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "./ui/Button"
+import { useSelector } from "react-redux"
 
 function DashboardLayout({ children }) {
   const location = useLocation()
   const pathname = location.pathname
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [notifications, setNotifications] = useState(3)
+  const user = useSelector((state) => state.auth.user);
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: "🏠" },
@@ -32,16 +34,18 @@ function DashboardLayout({ children }) {
               <span className="text-blue-600 text-xl md:hidden">AF</span>
             </Link>
           </div>
+
           <div className="flex items-center gap-2">
-            <button className="relative p-2 rounded-md hover:bg-gray-100">
-              🔔
-              {notifications > 0 && (
-                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
-                  {notifications}
-                </span>
-              )}
-            </button>
-            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">JD</div>
+            {/* User Profile */}
+            <div className="flex items-center gap-2">
+              <img
+                src="/public/images/avatar.png"
+                alt="User"
+                className="h-8 w-8 rounded-full border"
+              />
+              <span className="text-sm font-medium">{user.firstName} {user.lastName}</span>
+            </div>
+            
           </div>
         </div>
       </header>
