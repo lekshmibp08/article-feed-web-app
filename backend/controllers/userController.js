@@ -55,7 +55,43 @@ export const deleteArticle = async (req, res, next) => {
     } catch (error) {
         next(error)
     }
-}
+};
+export const getArticleById = async (req, res, next) => {
+    const { articleId } = req.params;
+    try {
+      if (!articleId) {
+          return next({message: "Article ID is required", statusCode: 400})
+      }
+      const article = await Article.findById(articleId);
+      if (!article) {
+          return next({ message: "Article not found", statusCode: 404 });
+      }
+      res.status(200).json(article);        
+    } catch (error) {
+        next(error)
+    }
+};
+export const updateArticle = async (req, res, next) => {
+    const { articleId } = req.params;
+    const updation = req.body;
+    
+    try {
+      if (!articleId) {
+          return next({message: "Article ID is required", statusCode: 400})
+      }
+      const updatedArticle  = await Article.findByIdAndUpdate(
+        articleId,
+        { $set: updation },
+        { new: true }
+      );
+      if (!updatedArticle) {
+          return next({ message: "Article not found", statusCode: 404 });
+      }
+      res.status(200).json(updatedArticle);        
+    } catch (error) {
+        next(error)
+    }
+};
 
 
 
