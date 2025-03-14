@@ -92,6 +92,25 @@ export const updateArticle = async (req, res, next) => {
         next(error)
     }
 };
+export const getPreferredArticles = async (req, res, next) => {
+    const preferences = req.query.preferences ? req.query.preferences.split(",") : [];    console.log("REACHED");
+    
+    try {
+        let query = {};
+        if(preferences.length > 0) {
+            query.category = { $in: preferences };
+        }
+        const articles = await Article.find(query)
+        .populate("author", "firstName lastName")
+            .sort({ createdAt: -1 });
+        console.log(articles);
+        
+        res.status(200).json(articles);        
+    } catch (error) {
+        console.error("Error fetching articles:", error);
+        next(error);
+    }
+};
 
 
 
