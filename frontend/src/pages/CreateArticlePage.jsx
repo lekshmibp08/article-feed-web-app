@@ -1,17 +1,21 @@
-"use client"
-
-import { useState } from "react"
+import DashboardLayout from "../components/DashboardLayout"
 import { Button } from "../components/ui/Button"
 import { Card } from "../components/ui/Card"
 import { Input } from "../components/ui/Input"
 import { Label } from "../components/ui/Label"
 import { Textarea } from "../components/ui/Textarea"
 import { Select } from "../components/ui/Select"
-import DashboardLayout from "../components/DashboardLayout"
-import axios from "axios"
+
+import { useState } from "react"
 import { useSelector } from "react-redux"
+import axios from "axios"
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css";
+
+
 import uploadImageToCloudinary from "../services/cloudinaryService"
 import validateArticleForm from "../utils/validateArticleForm"
+import { useNavigate } from "react-router-dom"
 
 
 function CreateArticlePage() {
@@ -29,6 +33,7 @@ function CreateArticlePage() {
   const [errors, setErrors] = useState({})
 
   const user = useSelector((state) => state.auth.user) 
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -45,7 +50,7 @@ function CreateArticlePage() {
 
   const handleUpload = async () => {
     if (!imageFile) {
-      alert("Please select an image")
+      toast.success("Please select an image!", { position: "top-center" });
       return
     }
   
@@ -53,9 +58,9 @@ function CreateArticlePage() {
     try {
       const url = await uploadImageToCloudinary(imageFile)
       setImageUrl(url)
-      alert("Image uploaded successfully!")
+      toast.success("Image uploaded successfully!", { position: "top-center" });
     } catch (error) {
-      alert(error.message)
+      toast.success("Error in image Uploading!", { position: "top-center" });
     } finally {
       setLoading(false)
     }
@@ -76,10 +81,6 @@ function CreateArticlePage() {
       setErrors(validationErrors);
       return;
     }
-    //if (!imageUrl) {
-    //    alert("Please upload an image first!")
-    //    return
-    //}
     setLoading(true)    
 
     const articleData = {
@@ -90,21 +91,18 @@ function CreateArticlePage() {
         tags: formData.tags,
         imageUrl,
         author: user._id, 
-    }
-
-    console.log("Sending article data:", articleData); 
-    
+    }    
 
     try {
-        const response = await axios.post('http://localhost:4000/api/create-article', {
-            articleData,
-        })
-        console.log("Article published:", response.data)
-        alert("Article successfully published!")
-        
+      const response = await axios.post('/api/create-article', {
+        articleData,
+      })
+      console.log("Article published:", response.data)
+      toast.success("Article successfully published!", { position: "top-center" });  
+      navigate("/dashboard/my-articles");      
     } catch (error) {
         console.error("Error publishing article:", error)
-        alert("Failed to publish article.")
+        toast.success("Failed to publish article.", { position: "top-center" });
     } finally {
         setLoading(false)
     }
