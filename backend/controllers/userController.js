@@ -32,7 +32,7 @@ export const getMyArticles = async (req, res, next) => {
         if (!userId) {
             return next({message: "User ID is required", statusCode: 400})
         }
-        const articles = await Article.find({ author: userId})           
+        const articles = await Article.find({ author: userId}).sort({createdAt: -1})           
         res.status(200).json(articles);        
     } catch (error) {        
         next(error)
