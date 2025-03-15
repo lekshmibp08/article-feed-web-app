@@ -1,4 +1,5 @@
 
+import { FaRegHeart, FaRegThumbsDown } from "react-icons/fa"
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "../components/ui/Button"
@@ -19,6 +20,13 @@ function MyArticlesPage() {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [articleToDelete, setArticleToDelete] = useState(null)
+
+  const [selectedArticle, setSelectedArticle] = useState(null)
+  const [showDialog, setShowDialog] = useState(false)
+  const openArticleDialog = (article) => {
+    setSelectedArticle(article)
+    setShowDialog(true)
+  }
 
   const fetchArticles = async () => {
     try {
@@ -101,7 +109,9 @@ function MyArticlesPage() {
                       <span className="text-sm">Blocks: {article.blocksCount}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button className="p-1 rounded-md hover:bg-gray-100">👁️</button>
+                      <button onClick={() => openArticleDialog(article)}
+                       className="p-1 rounded-md hover:bg-gray-100"
+                      >👁️</button>
                       <Link to={`/dashboard/edit-article/${article._id}`}>
                         <button className="p-1 rounded-md hover:bg-gray-100">✏️</button>
                       </Link>
@@ -147,6 +157,46 @@ function MyArticlesPage() {
           </div>
         </div>
       </Dialog>
+
+      <Dialog isOpen={showDialog} onClose={() => setShowDialog(false)} title={selectedArticle?.title}>
+        {selectedArticle && (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-500">
+              By {selectedArticle.author.firstName} {selectedArticle.author.lastName} • { }
+              {new Date(selectedArticle.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+            <img
+              src={selectedArticle.imageUrl || "/images/place-holder.svg"}
+              alt={selectedArticle.title}
+              className="w-full h-[200px] object-cover rounded-md"
+            />
+            <p>{selectedArticle.description}</p>
+            <p>{selectedArticle.content}</p>
+            <p className="flex flex-wrap gap-2 text-sm text-blue-600 font-medium">
+              {Array.isArray(selectedArticle?.tags) && selectedArticle.tags.length > 0
+                ? selectedArticle.tags[0].split(",").map((tag, index) => (
+                    <span key={index} className="bg-blue-100 px-2 py-1 rounded-md">
+                      #{tag.trim()}
+                    </span>
+                  ))
+                : "No Tags"}
+            </p>
+
+            {/* Like & Dislike Buttons */}
+            <div className="flex items-center gap-4">
+              <span className="text-sm">Likes: {selectedArticle.likesCount}</span>
+              <span className="text-sm">Dislikes: {selectedArticle.dislikesCount}</span>
+              <span className="text-sm">Blocks: {selectedArticle.blocksCount}</span>
+            </div>
+
+          </div>
+        )}
+      </Dialog>
+
       <ToastContainer position="top-center" autoClose={3000} />
     </DashboardLayout>
   )
