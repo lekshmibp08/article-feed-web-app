@@ -39,7 +39,7 @@ function DashboardLayout({ children }) {
             {/* User Profile */}
             <div className="flex items-center gap-2">
               <img
-                src="/public/images/avatar.png"
+                src="/images/avatar.png"
                 alt="User"
                 className="h-8 w-8 rounded-full border"
               />
