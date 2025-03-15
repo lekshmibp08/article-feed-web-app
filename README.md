@@ -33,6 +33,7 @@ This is a **MERN stack** web application that allows users to read, create, and 
 -multer - File/image uploads
 -body-parser - Handle request data
 -nodemon - Auto-restarts the server on changes
+-React icons for enhanced UI
 
 -user sign up
 -node mailer for email verification
@@ -40,3 +41,5 @@ This is a **MERN stack** web application that allows users to read, create, and 
 -user login
 -create an article
     -sign up at Cloudinary and get your Cloud Name
+-
+    
