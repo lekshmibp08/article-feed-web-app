@@ -6,7 +6,7 @@ import { Card } from "../components/ui/Card"
 import { Dialog } from "../components/ui/Dialog"
 import DashboardLayout from "../components/DashboardLayout"
 import { useSelector } from "react-redux"
-import axios from "axios"
+import configAxios from "../services/axiosConfig"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,7 +22,7 @@ function MyArticlesPage() {
 
   const fetchArticles = async () => {
     try {
-        const response = await axios.get(`/api/my-articles/${user._id}`);
+        const response = await configAxios.get(`/api/my-articles/${user._id}`);
         setArticles(response.data);
     } catch (error) {
         setError("Failed to load articles.")
@@ -41,7 +41,7 @@ function MyArticlesPage() {
   const handleDelete = async () => {
     if (!articleToDelete) return
     try {
-        await axios.delete(`/api/articles/${articleToDelete}`);
+        await configAxios.delete(`/api/articles/${articleToDelete}`);
         setArticles((prevArticles) =>
             prevArticles.filter((article) => article._id !== articleToDelete)
         );
@@ -120,7 +120,7 @@ function MyArticlesPage() {
                   </div>
                 </div>
                 <img
-                  src={article.imageUrl || "/placeholder.svg"}
+                  src={article.imageUrl || "/images/place-holder.svg"}
                   alt={article.title}
                   className="w-full h-[100px] object-cover rounded-md"
                 />

@@ -3,7 +3,7 @@ import { FaHeart, FaRegHeart, FaThumbsDown, FaRegThumbsDown } from "react-icons/
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { useSelector } from "react-redux"
-import axios from "axios"
+import configAxios from "../services/axiosConfig"
 import { Button } from "../components/ui/Button"
 import { Card } from "../components/ui/Card"
 import { Dialog } from "../components/ui/Dialog"
@@ -28,7 +28,7 @@ function DashboardPage() {
     console.log(preferences);
     setLoading(true);
     try {
-      const response = await axios.get("/api/articles", {
+      const response = await configAxios.get("/api/articles", {
         params: { preferences: preferences.join(",") }
       });
       setArticles(response.data)
@@ -114,7 +114,7 @@ function DashboardPage() {
                     </div>
                   </div>
                   <img
-                    src={article.imageUrl || "/public/images/place-holder.svg"}
+                    src={article.imageUrl || "/images/place-holder.svg"}
                     alt={article.title}
                     className="w-full h-[200px] object-cover rounded-md"
                   />
@@ -138,7 +138,7 @@ function DashboardPage() {
               })}
             </p>
             <img
-              src={selectedArticle.imageUrl || "/public/images/place-holder.svg"}
+              src={selectedArticle.imageUrl || "/images/place-holder.svg"}
               alt={selectedArticle.title}
               className="w-full h-[200px] object-cover rounded-md"
             />

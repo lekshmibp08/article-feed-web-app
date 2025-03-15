@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate  } from "react-router-dom"
-import axios from "axios"
+import configAxios from "../services/axiosConfig";
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
 
@@ -37,7 +37,7 @@ function EditArticlePage() {
 
   const fetchArticle = async () => {
     try {
-      const response = await axios.get(`/api/articles/${id}`);
+      const response = await configAxios.get(`/api/articles/${id}`);
       const { 
         title, category, description, content, tags, imageUrl 
       } = response.data;
@@ -101,7 +101,7 @@ function EditArticlePage() {
     }
     setSaveLoading(true) 
     try {
-      await axios.patch(`/api/articles/${id}`, {...formData, imageUrl});
+      await configAxios.patch(`/api/articles/${id}`, {...formData, imageUrl});
       toast.success("Article updated successfully!", { position: "top-center" });
       navigate("/dashboard/my-articles");
     } catch (error) {
@@ -179,7 +179,7 @@ function EditArticlePage() {
               <div className="space-y-2">
                 <Label htmlFor="current-image">Current Image</Label>
                 <img
-                  src={imageUrl ? imageUrl : "https://placehold.co/400x200"}
+                  src={imageUrl ? imageUrl : "/images/place-holder.svg"}
                   alt="Article featured image"
                   className="w-full max-w-md h-[200px] object-cover rounded-md"
                 />

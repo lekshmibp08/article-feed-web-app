@@ -8,7 +8,7 @@ import { Select } from "../components/ui/Select"
 
 import { useState } from "react"
 import { useSelector } from "react-redux"
-import axios from "axios"
+import configAxios from "../services/axiosConfig"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
 
@@ -60,7 +60,7 @@ function CreateArticlePage() {
       setImageUrl(url)
       toast.success("Image uploaded successfully!", { position: "top-center" });
     } catch (error) {
-      toast.success("Error in image Uploading!", { position: "top-center" });
+      toast.error("Error in image Uploading!", { position: "top-center" });
     } finally {
       setLoading(false)
     }
@@ -94,7 +94,7 @@ function CreateArticlePage() {
     }    
 
     try {
-      const response = await axios.post('/api/create-article', {
+      const response = await configAxios.post('/api/create-article', {
         articleData,
       })
       console.log("Article published:", response.data)
