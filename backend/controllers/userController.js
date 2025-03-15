@@ -1,5 +1,6 @@
 import User from '../models/userSchema.js'
 import Article from '../models/articleSchema.js';
+import bcrypt from 'bcryptjs';
 
 export const createAndPublishArticle = async (req, res, next) => {
     const { title, description, content, category, tags, author, imageUrl } = req.body.articleData
@@ -155,6 +156,55 @@ export const updateLikesDislikes = async (req, res, next) => {
       next(error);
     }
 };
+export const updatePersonalInfo = async (req, res, next) => {
+  try {
+    const { firstName, lastName, email, phone } = req.body;
+    const userId = req.user.id;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { firstName, lastName, email, phone },
+      { new: true }
+    ).select("-password");    
+    res.json({ message: "Profile updated successfully", user });    
+  } catch (error) {
+    next(error);
+  }
+};
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.id);
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return next({ message: "Current password is incorrect", statusCode: 400 });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword
+    await user.save();
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    next(error)
+  }
+};
+export const updatePreferences = async (req, res, next) => {
+  try {
+    const { preferences } = req.body;
+    const user = await User.findByIdAndUpdate(req.user.id, 
+      { preferences }, { new: true }
+    ).select("-password");
+    console.log(user);
+    
+    res.json({ message: "Preferences updated successfully", user });
+  } catch (error) {
+    next(error)
+  }
+
+}
+
+
   
 
 
