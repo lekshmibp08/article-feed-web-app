@@ -1,12 +1,14 @@
 
+import { FaHeart, FaRegHeart, FaThumbsDown, FaRegThumbsDown } from "react-icons/fa"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { useSelector } from "react-redux"
+import axios from "axios"
 import { Button } from "../components/ui/Button"
 import { Card } from "../components/ui/Card"
 import { Dialog } from "../components/ui/Dialog"
 import DashboardLayout from "../components/DashboardLayout"
-import { useSelector } from "react-redux"
-import axios from "axios"
+import { toggleLikeDislike } from '../utils/articleActions'
 
 function DashboardPage() {
   const user = useSelector((state) => state.auth.user);
@@ -128,30 +130,50 @@ function DashboardPage() {
         {selectedArticle && (
           <div className="space-y-4">
             <p className="text-sm text-gray-500">
-              By {selectedArticle.author} • {selectedArticle.date}
+              By {selectedArticle.author.firstName} {selectedArticle.author.lastName} • { }
+              {new Date(selectedArticle.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
             </p>
             <img
-              src={selectedArticle.image || "/placeholder.svg"}
+              src={selectedArticle.imageUrl || "/public/images/place-holder.svg"}
               alt={selectedArticle.title}
               className="w-full h-[200px] object-cover rounded-md"
             />
-            <p>{selectedArticle.excerpt}</p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-              ea commodo consequat.
-            </p>
+            <p>{selectedArticle.description}</p>
+            <p>{selectedArticle.content}</p>
+            
+            {/* Like & Dislike Buttons */}
             <div className="flex items-center gap-4">
-              <Button variant="outline" size="sm">
-                ❤️ Like ({selectedArticle.likes})
-              </Button>
-              <Button variant="outline" size="sm">
-                👎 Dislike ({selectedArticle.dislikes})
-              </Button>
-              <Button variant="outline" size="sm">
-                Block
-              </Button>
+              <button 
+                className="flex items-center gap-2 p-2 rounded-md border border-gray-300 hover:bg-gray-100"
+                onClick={() => toggleLikeDislike(selectedArticle, user, setSelectedArticle, setArticles, true)}
+              >
+                {selectedArticle.likes.includes(user._id) ? (
+                  <FaHeart className="text-gray-600" />
+                ) : (
+                  <FaRegHeart className="text-gray-600" />
+                )}
+                <span className="text-sm">Like ({selectedArticle.likes.length})</span>
+              </button>
+
+              <button 
+                className="flex items-center gap-2 p-2 rounded-md border border-gray-300 hover:bg-gray-100"
+                onClick={() => toggleLikeDislike(selectedArticle, user, setSelectedArticle, setArticles, false)}
+              >
+                {selectedArticle.dislikes.includes(user._id) ? (
+                  <FaThumbsDown className="text-gray-600" />
+                ) : (
+                  <FaRegThumbsDown className="text-gray-600" />
+                )}
+                <span className="text-sm">Dislike ({selectedArticle.dislikes.length})</span>
+              </button>
+
+              <Button variant="outline" size="sm">Block</Button>
             </div>
+
           </div>
         )}
       </Dialog>
