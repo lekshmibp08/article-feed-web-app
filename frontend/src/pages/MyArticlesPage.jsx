@@ -1,5 +1,4 @@
-
-import { FaRegHeart, FaRegThumbsDown } from "react-icons/fa"
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "../components/ui/Button"
@@ -8,7 +7,7 @@ import { Dialog } from "../components/ui/Dialog"
 import DashboardLayout from "../components/DashboardLayout"
 import { useSelector } from "react-redux"
 import configAxios from "../services/axiosConfig"
-import { toast, ToastContainer } from "react-toastify"
+import { toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css";
 
 
@@ -61,6 +60,22 @@ function MyArticlesPage() {
     }      
   }
 
+  const handlePublish = async (articleId) => {
+    try {
+      const response = await configAxios.patch(`/api/articles/publish/${articleId}`);
+      
+      setArticles((prevArticles) =>
+        prevArticles.map((article) =>
+          article._id === articleId ? { ...article, status: "Published" } : article
+        )
+      );
+  
+      toast.success("Article published successfully!", { position: "top-center" });
+    } catch (error) {
+      toast.error("Failed to publish article.", { position: "top-center" });
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="flex items-center justify-between">
@@ -111,9 +126,13 @@ function MyArticlesPage() {
                     <div className="flex items-center gap-2">
                       <button onClick={() => openArticleDialog(article)}
                        className="p-1 rounded-md hover:bg-gray-100"
-                      >👁️</button>
+                       >
+                        <FaEye className="text-gray-600 hover:text-gray-800" />
+                       </button>
                       <Link to={`/dashboard/edit-article/${article._id}`}>
-                        <button className="p-1 rounded-md hover:bg-gray-100">✏️</button>
+                        <button className="p-1 rounded-md hover:bg-gray-100">
+                          <FaEdit className="text-blue-600 hover:text-blue-800" />
+                        </button>
                       </Link>
                       <div className="relative">
                         <button
@@ -122,8 +141,8 @@ function MyArticlesPage() {
                             setArticleToDelete(article._id)
                             setShowDeleteDialog(true)
                           }}
-                        >
-                          🗑️
+                          >
+                          <FaTrash className="text-red-500 hover:text-red-700" />
                         </button>
                       </div>
                     </div>
@@ -134,6 +153,11 @@ function MyArticlesPage() {
                   alt={article.title}
                   className="w-full h-[100px] object-cover rounded-md"
                 />
+                {article.status === "Draft" && (
+                  <Button variant="outline" onClick={() => handlePublish(article._id)}>
+                    Publish
+                  </Button>
+                )}
               </div>
             </div>
           </Card>
@@ -197,7 +221,6 @@ function MyArticlesPage() {
         )}
       </Dialog>
 
-      <ToastContainer position="top-center" autoClose={3000} />
     </DashboardLayout>
   )
 }
