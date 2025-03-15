@@ -106,10 +106,7 @@ function DashboardPage() {
                         </div>
                         <div className="flex items-center gap-1">
                           <span className="text-sm text-gray-500">👎 {article.dislikesCount}</span>
-                        </div>
-                        <div className="relative">
-                          <button className="p-1 rounded-md hover:bg-gray-100">⋮</button>
-                        </div>
+                        </div>                        
                       </div>
                     </div>
                   </div>
@@ -144,7 +141,17 @@ function DashboardPage() {
             />
             <p>{selectedArticle.description}</p>
             <p>{selectedArticle.content}</p>
-            
+
+            <p className="flex flex-wrap gap-2 text-sm text-blue-600 font-medium">
+              {Array.isArray(selectedArticle?.tags) && selectedArticle.tags.length > 0
+                ? selectedArticle.tags[0].split(",").map((tag, index) => (
+                    <span key={index} className="px-1 py-1 rounded-md">
+                      #{tag.trim()}
+                    </span>
+                  ))
+                : " "}
+            </p>            
+
             {/* Like & Dislike Buttons */}
             <div className="flex items-center gap-4">
               <button 
