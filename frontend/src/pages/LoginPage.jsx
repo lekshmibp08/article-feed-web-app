@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { loginSuccess } from "../redux/slices/authSlice";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [tab, setTab] = useState("email");
   const [formData, setFormData] = useState({
     email: "",
@@ -31,7 +33,7 @@ const LoginPage = () => {
       const response = await axios.post('api/login', payload)
       const { token, userData } = response.data;
       dispatch(loginSuccess({ user: userData, token }));
-      alert("Login successful!");
+      navigate("/dashboard", { replace: true });
 
     } catch (error) {
       setError(error.response.data.message);
