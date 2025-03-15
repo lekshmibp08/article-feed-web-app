@@ -80,7 +80,7 @@ export const userLogin = async (req, res, next) => {
     const token = jwt.sign(
         { id: user._id, email: user.email },
         process.env.JWT_SECRET,
-        { expiresIn: "30m" } 
+        { expiresIn: "7d" } 
     );
 
     const refreshToken = jwt.sign(
