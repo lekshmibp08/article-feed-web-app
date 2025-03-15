@@ -1,4 +1,4 @@
-
+import { FaHome, FaFileAlt, FaPen, FaCog, FaSignOutAlt, FaBars } from "react-icons/fa";
 import { useEffect, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
@@ -26,10 +26,10 @@ function DashboardLayout({ children }) {
   }, [user, navigate]);
 
   const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: "🏠" },
-    { name: "My Articles", href: "/dashboard/my-articles", icon: "📄" },
-    { name: "Create Article", href: "/dashboard/create-article", icon: "✏️" },
-    { name: "Settings", href: "/dashboard/settings", icon: "⚙️" },
+    { name: "Dashboard", href: "/dashboard", icon: <FaHome /> },
+    { name: "My Articles", href: "/dashboard/my-articles", icon: <FaFileAlt /> },
+    { name: "Create Article", href: "/dashboard/create-article", icon: <FaPen /> },
+    { name: "Settings", href: "/dashboard/settings", icon: <FaCog /> },
   ]
 
   return (
@@ -41,7 +41,7 @@ function DashboardLayout({ children }) {
               className="md:hidden p-2 rounded-md hover:bg-gray-100"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
-              ☰
+              <FaBars className="text-xl" />
             </button>
             <Link to="/" className="flex items-center gap-2 font-bold">
               <span className="text-blue-600 text-xl hidden md:inline-block">ArticleFeed</span>
@@ -92,7 +92,7 @@ function DashboardLayout({ children }) {
               ))}
               <div className="mt-auto pt-4">
                 <Button onClick={handleLogout} variant="ghost" className="w-full justify-start text-red-500 hover:bg-red-50 hover:text-red-600">
-                  🚪 Logout
+                  <FaSignOutAlt className="mr-2" /> Logout
                 </Button>
               </div>
             </nav>
@@ -118,7 +118,7 @@ function DashboardLayout({ children }) {
             ))}
             <div className="mt-auto pt-4">
               <Button onClick={handleLogout} variant="ghost" className="w-full justify-start text-red-500 hover:bg-red-50 hover:text-red-600">
-                🚪 Logout
+                <FaSignOutAlt className="mr-2" /> Logout
               </Button>
             </div>
           </nav>

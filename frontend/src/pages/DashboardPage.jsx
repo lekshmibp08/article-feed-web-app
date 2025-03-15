@@ -45,17 +45,9 @@ function DashboardPage() {
 
   const handleBlockUnblock = async (articleId, isBlocked) => {
     try {
-      console.log("Sending articleId:", articleId); 
-      console.log('====================================');
-      console.log(isBlocked);
-      console.log('====================================');
-  
       const endpoint = isBlocked ? "/api/articles/unblock" : "/api/articles/block";
       const response = await configAxios.post(endpoint, { articleId });
-  
-      console.log("Response:", response.data);
-  
-      // Update state
+    
       setSelectedArticle(response.data.article);
     } catch (error) {
       console.error("Error updating block status:", error);
@@ -121,12 +113,15 @@ function DashboardPage() {
 
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1">
-                          <span className="text-sm text-gray-500">❤️ {article.likesCount}</span>
+                          <FaRegHeart className="text-red-500" /> 
+                          <span className="text-sm text-gray-500">{article.likesCount}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className="text-sm text-gray-500">👎 {article.dislikesCount}</span>
+                          <FaRegThumbsDown className="text-gray-500" /> 
+                          <span className="text-sm text-gray-500">{article.dislikesCount}</span>
                         </div>                        
                       </div>
+
                     </div>
                   </div>
                   <img
