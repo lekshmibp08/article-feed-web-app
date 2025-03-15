@@ -120,8 +120,8 @@ function SettingsPage() {
     }
     try {
       const response = await configAxios.patch("/api/users/update-preferences", { preferences: selectedCategories });
-      dispatch(updateUser(response.data.user));
       toast.success("Preferences Updated Successfully!", { position: "top-center" });
+      dispatch(updateUser(response.data.user));
     } catch (error) {
       toast.error("Error updating preferences!", { position: "top-center" });
     }
