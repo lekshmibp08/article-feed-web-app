@@ -1,15 +1,29 @@
 
-import { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import { Button } from "./ui/Button"
-import { useSelector } from "react-redux"
+import { logout } from "../redux/slices/authSlice"
 
 function DashboardLayout({ children }) {
   const location = useLocation()
   const pathname = location.pathname
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [notifications, setNotifications] = useState(3)
   const user = useSelector((state) => state.auth.user);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout()); 
+    navigate("/login"); 
+  };
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login"); 
+    }
+  }, [user, navigate]);
 
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: "🏠" },
@@ -76,6 +90,11 @@ function DashboardLayout({ children }) {
                   {item.name}
                 </Link>
               ))}
+              <div className="mt-auto pt-4">
+                <Button onClick={handleLogout} variant="ghost" className="w-full justify-start text-red-500 hover:bg-red-50 hover:text-red-600">
+                  🚪 Logout
+                </Button>
+              </div>
             </nav>
           </div>
         </div>
@@ -98,7 +117,7 @@ function DashboardLayout({ children }) {
               </Link>
             ))}
             <div className="mt-auto pt-4">
-              <Button variant="ghost" className="w-full justify-start text-red-500 hover:bg-red-50 hover:text-red-600">
+              <Button onClick={handleLogout} variant="ghost" className="w-full justify-start text-red-500 hover:bg-red-50 hover:text-red-600">
                 🚪 Logout
               </Button>
             </div>
