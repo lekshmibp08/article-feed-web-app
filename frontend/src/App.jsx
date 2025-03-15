@@ -12,19 +12,24 @@ import MyArticlesPage from "./pages/MyArticlesPage";
 import EditArticlePage from "./pages/EditArticlePage";
 import SettingsPage from "./pages/SettingsPage";
 
-impo
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 function App() {
   return <>
   <Routes>
-    <Route path='/' element={<HomePage />} />
-    <Route path='/signup' element={<SignupForm />} />
-    <Route path='/login' element={<LoginPage />} />
-    <Route path='/dashboard' element={<DashboardPage />} />
-    <Route path="/dashboard/create-article" element={<CreateArticlePage />} />
-    <Route path="/dashboard/my-articles" element={<MyArticlesPage />} />
-    <Route path="/dashboard/edit-article/:id" element={<EditArticlePage />} />
-    <Route path="/dashboard/settings" element={<SettingsPage />} />
+    <Route element={<PublicRoute/>}>
+      <Route path='/' element={<HomePage />} />
+      <Route path='/signup' element={<SignupForm />} />
+      <Route path='/login' element={<LoginPage />} />
+    </Route>
+    <Route element={<ProtectedRoute/>}>
+      <Route path='/dashboard' element={<DashboardPage />} />
+      <Route path="/dashboard/create-article" element={<CreateArticlePage />} />
+      <Route path="/dashboard/my-articles" element={<MyArticlesPage />} />
+      <Route path="/dashboard/edit-article/:id" element={<EditArticlePage />} />
+      <Route path="/dashboard/settings" element={<SettingsPage />} />
+    </Route>
 
 
   </Routes>
