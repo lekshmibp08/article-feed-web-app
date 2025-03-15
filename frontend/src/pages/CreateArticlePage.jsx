@@ -102,16 +102,49 @@ function CreateArticlePage() {
       navigate("/dashboard/my-articles");      
     } catch (error) {
         console.error("Error publishing article:", error)
-        toast.success("Failed to publish article.", { position: "top-center" });
+        toast.error("Failed to publish article.", { position: "top-center" });
     } finally {
         setLoading(false)
     }
 
   }
 
-  const handleSaveDraft = () => {
-    console.log("Saving draft:", formData)
-    
+  const handleSaveDraft = async (e) => {
+    console.log('====================================');
+    console.log("DRAFT");
+    console.log('====================================');
+    e.preventDefault()
+
+    const validationErrors = validateArticleForm(formData, imageFile);
+    if(Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setLoading(true)    
+
+    const articleData = {
+        title: formData.title,
+        description: formData.description,
+        content: formData.content,
+        category: formData.category,
+        tags: formData.tags,
+        imageUrl,
+        author: user._id, 
+    }    
+
+    try {
+      const response = await configAxios.post('/api/draft-article', {
+        articleData,
+      })
+      console.log("Article drafted:", response.data)
+      toast.success("Article successfully drafted!", { position: "top-center" });  
+      navigate("/dashboard/my-articles");      
+    } catch (error) {
+        console.error("Error draft article:", error)
+        toast.error("Failed to draft article.", { position: "top-center" });
+    } finally {
+        setLoading(false)
+    }  
   }
 
   return (
