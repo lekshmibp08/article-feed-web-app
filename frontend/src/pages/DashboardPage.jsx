@@ -43,6 +43,25 @@ function DashboardPage() {
     fetchPrefferedArticle();
   }, [user])
 
+  const handleBlockUnblock = async (articleId, isBlocked) => {
+    try {
+      console.log("Sending articleId:", articleId); 
+      console.log('====================================');
+      console.log(isBlocked);
+      console.log('====================================');
+  
+      const endpoint = isBlocked ? "/api/articles/unblock" : "/api/articles/block";
+      const response = await configAxios.post(endpoint, { articleId });
+  
+      console.log("Response:", response.data);
+  
+      // Update state
+      setSelectedArticle(response.data.article);
+    } catch (error) {
+      console.error("Error updating block status:", error);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="flex items-center justify-between">
@@ -178,7 +197,13 @@ function DashboardPage() {
                 <span className="text-sm">Dislike ({selectedArticle.dislikes.length})</span>
               </button>
 
-              <Button variant="outline" size="sm">Block</Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleBlockUnblock(selectedArticle._id, selectedArticle.blocks.includes(user._id))}
+              >
+                {selectedArticle.blocks.includes(user._id) ? "Unblock" : "Block"}
+              </Button>
             </div>
 
           </div>
