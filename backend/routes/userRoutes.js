@@ -10,7 +10,9 @@ import {
     updateLikesDislikes,
     updatePersonalInfo, 
     resetPassword,
-    updatePreferences
+    updatePreferences,
+    blockArticle,
+    unblockArticle
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -25,6 +27,7 @@ router.patch("/articles/:id/update-likes-dislikes", updateLikesDislikes);
 router.patch("/users/update-profile", auth, updatePersonalInfo);
 router.patch("/users/change-password", auth, resetPassword);
 router.patch("/users/update-preferences", auth, updatePreferences);
-
+router.post("/articles/block", auth, blockArticle);   
+router.post("/articles/unblock", auth, unblockArticle);  
 
 export default router;

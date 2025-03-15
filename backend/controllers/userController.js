@@ -1,6 +1,7 @@
 import User from '../models/userSchema.js'
 import Article from '../models/articleSchema.js';
 import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 
 export const createAndPublishArticle = async (req, res, next) => {
     const { title, description, content, category, tags, author, imageUrl } = req.body.articleData
@@ -104,7 +105,6 @@ export const getPreferredArticles = async (req, res, next) => {
         const articles = await Article.find(query)
         .populate("author", "firstName lastName")
             .sort({ createdAt: -1 });
-        console.log(articles);
         
         res.status(200).json(articles);        
     } catch (error) {
@@ -201,8 +201,45 @@ export const updatePreferences = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+};
+export const blockArticle = async (req, res, next) => {
+  try {
+    const { articleId } = req.body;
+    const userId = req.user.id;
 
-}
+    if (!articleId || !mongoose.Types.ObjectId.isValid(articleId)) {
+      return res.status(400).json({ message: "Invalid article ID format" });
+    }
+
+    const article = await Article.findById(articleId);
+    if (!article) return next({ message: "Article not found", statusCode: 404 });
+
+    if (!article.blocks.includes(userId)) {
+      article.blocks.push(userId);
+      await article.save();
+    }
+
+    res.status(200).json({ message: "Article blocked successfully", article });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+export const unblockArticle = async (req, res, next) => {
+  try {
+    const { articleId } = req.body;
+    const userId = req.user.id; 
+
+    const article = await Article.findById(articleId);
+    if (!article) return next({ message: "Article not found", statusCode: 404 });
+
+    article.blocks = article.blocks.filter((id) => id.toString() !== userId);
+    await article.save();
+
+    res.status(200).json({ message: "Article unblocked successfully", article });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
   
