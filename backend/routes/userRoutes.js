@@ -5,7 +5,7 @@ import {
     deleteArticle,
     getArticleById,
     updateArticle,
-    getPreferredArticles
+    getPreferredArticles, updateLikesDislikes
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -16,6 +16,7 @@ router.delete("/articles/:articleId", deleteArticle);
 router.get("/articles/:articleId", getArticleById);
 router.patch("/articles/:articleId", updateArticle);
 router.get("/articles", getPreferredArticles);
+router.patch("/articles/:id/update-likes-dislikes", updateLikesDislikes);
 
 
 export default router;

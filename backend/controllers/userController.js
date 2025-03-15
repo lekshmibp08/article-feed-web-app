@@ -111,6 +111,50 @@ export const getPreferredArticles = async (req, res, next) => {
         next(error);
     }
 };
-
+export const updateLikesDislikes = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { userId, action } = req.body; 
+  
+      const article = await Article.findById(id);
+      if (!article) {
+        return next({ message: "Article not found", statusCode: 404 });
+      }
+  
+      let updatedLikes = new Set(article.likes.map(String));
+      let updatedDislikes = new Set(article.dislikes.map(String));
+  
+      if (action === "like") {
+        if (updatedLikes.has(userId)) {
+          updatedLikes.delete(userId);
+        } else {
+          updatedDislikes.delete(userId); 
+          updatedLikes.add(userId);
+        }
+      } else {
+        if (updatedDislikes.has(userId)) {
+          updatedDislikes.delete(userId);
+        } else {
+          updatedLikes.delete(userId); 
+          updatedDislikes.add(userId);
+        }
+      }
+  
+      const updatedArticle = await Article.findByIdAndUpdate(
+        id,
+        {
+          likes: Array.from(updatedLikes),
+          dislikes: Array.from(updatedDislikes),
+        },
+        { new: true }
+      );
+  
+      res.status(200).json(updatedArticle);
+    } catch (error) {
+      console.error("Error updating likes/dislikes:", error);
+      next(error);
+    }
+};
+  
 
 
