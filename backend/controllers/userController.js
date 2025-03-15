@@ -98,7 +98,7 @@ export const getPreferredArticles = async (req, res, next) => {
     const preferences = req.query.preferences ? req.query.preferences.split(",") : [];    console.log("REACHED");
     
     try {
-        let query = {};
+        let query = { status: "Published" };
         if(preferences.length > 0) {
             query.category = { $in: preferences };
         }
@@ -238,6 +238,53 @@ export const unblockArticle = async (req, res, next) => {
     res.status(200).json({ message: "Article unblocked successfully", article });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+export const draftArticle = async (req, res, next) => {
+  const { title, description, content, category, tags, author, imageUrl } = req.body.articleData
+  console.log(author);
+  
+
+  try {
+      const newArticle = new Article({
+          title,
+          description,
+          content,
+          category,
+          tags: tags,
+          imageUrl,
+          author,
+          status: "Draft",
+      })
+      await newArticle.save()
+
+      res.status(201).json({ message: "Article published successfully!", article: newArticle });
+
+  } catch (error) {
+      next(error);
+  }
+};
+export const publishArticle = async (req, res, next) => {
+  try {
+    const { articleId } = req.params;
+    
+    const article = await Article.findById(articleId);
+    if (!article) {
+        return next({ message: "Article not found", statusCode: 404 });
+    }
+    if (article.status === "Published") {
+        return next({ message: "Article is already published", statusCode: 400 });
+    }
+    article.status = "Published";
+    article.publishedAt = new Date();
+    await article.save();
+    res.status(200).json({
+        message: "Article published successfully",
+        article,
+    });
+  } catch (error) {
+      console.error("Error publishing article:", error);
+      next(error)
   }
 };
 
