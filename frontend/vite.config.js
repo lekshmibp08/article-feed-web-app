@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: process.env.VITE_API_BASE_URL || "http://localhost:4000",
+        target: process.env.VITE_API_BASE_URL || "https://article-feed-web-app.vercel.app" || "http://localhost:4000",
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, "/api"), // Ensure correct forwarding
