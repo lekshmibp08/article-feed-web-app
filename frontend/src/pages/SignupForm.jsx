@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import configAxios from "../services/axiosConfig";
 import Modal from "react-modal";
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -79,7 +79,7 @@ const SignupForm = () => {
     setError('');
     
     try {
-      const response = await axios.post('/api/send-otp', { email: values.email, phone: values.phone });
+      const response = await configAxios.post('/api/send-otp', { email: values.email, phone: values.phone });
       setMessage(response.data.message);
       setStep(2); // Move to Step 2
       setTimer(60); // Reset timer for 2 minutes
@@ -93,7 +93,7 @@ const SignupForm = () => {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post('/api/verify-and-register', values);
+      const response = await configAxios.post('/api/verify-and-register', values);
       setMessage(response.data.message);
       navigate('/login'); 
     } catch (err) {
