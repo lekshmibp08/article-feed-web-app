@@ -30,7 +30,7 @@ const LoginPage = () => {
       : { phone: formData.phone, password: formData.password };
 
     try {
-      const response = await axios.post('api/login', payload)
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/login`, payload)
       const { token, userData } = response.data;
       dispatch(loginSuccess({ user: userData, token }));
       navigate("/dashboard", { replace: true });
