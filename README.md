@@ -43,3 +43,4 @@ This is a **MERN stack** web application that allows users to read, create, and 
     -sign up at Cloudinary and get your Cloud Name
 -
     
+updated
