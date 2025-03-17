@@ -102,7 +102,7 @@ function DashboardPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                       <img 
-                        src="/public/images/avatar.png" 
+                        src="/images/avatar.png" 
                         alt={`${article.author.firstName}`} 
                         className="w-8 h-8 rounded-full object-cover" 
                       />
