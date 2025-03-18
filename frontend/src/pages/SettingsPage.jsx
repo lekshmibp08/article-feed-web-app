@@ -190,8 +190,9 @@ function SettingsPage() {
                       id="email"
                       name="email"
                       type="email"
-                      value={personalInfo.email}
-                      onChange={handlePersonalInfoChange}
+                      value={user.email}
+                      readOnly
+                      className="bg-gray-200 cursor-not-allowed"                      
                     />
                   </div>
                   {personalErrors.email && <p className="text-red-500 text-xs">{personalErrors.email}</p>}
