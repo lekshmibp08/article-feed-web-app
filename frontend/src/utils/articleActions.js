@@ -1,10 +1,10 @@
-import axios from "axios";
+import configAxios from "../services/axiosConfig";
 
 export const toggleLikeDislike = async (article, user, setSelectedArticle, setArticles, isLike) => {
   if (!article || !user) return;
 
   try {
-    const response = await axios.patch(`/api/articles/${article._id}/update-likes-dislikes`, {
+    const response = await configAxios.patch(`/api/articles/${article._id}/update-likes-dislikes`, {
       userId: user._id,
       action: isLike ? "like" : "dislike",
     });
