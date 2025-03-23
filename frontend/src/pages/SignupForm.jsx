@@ -11,7 +11,7 @@ Modal.setAppElement("#root"); // Required for accessibility
 
 const step1ValidationSchema = Yup.object().shape({
   firstName: Yup.string()
-    .matches(/^[A-Za-z]{5, 20}$/, 'First Name must be 3-20 letters and contain only alphabets')
+    .matches(/^[A-Za-z]{3,20}$/, 'First Name must be 3-20 letters and contain only alphabets')
     .required('First Name is required'),
     
 
